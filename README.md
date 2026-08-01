@@ -14,3 +14,5 @@ However, if you plug a USB flash drive into your Raspberry Pi (which usually mou
 
 `python3 main.py -s /mnt/usb_drive/astrophotography`
 The app will immediately create `/mnt/usb_drive/astrophotography/captures`, `/processed`, and `/manual` for you, and securely route all web gallery requests and camera saves to the external drive, completely protecting your SD card from wear and tear.
+
+***Note:*** *Still working on the image processing implementation*
