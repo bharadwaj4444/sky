@@ -1,5 +1,6 @@
 # sky
-Sky view
+**Sky view**
+
 **How to use the new Storage configuration**
 
 If you run the script exactly as you have been doing, it will default to saving files in the same folder as your code:
