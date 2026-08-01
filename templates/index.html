@@ -28,7 +28,6 @@
         .gallery-tabs button { padding: 8px 15px; background: #313244; border: none; color: #cdd6f4; cursor: pointer; border-radius: 6px 6px 0 0; }
         .gallery-tabs button.active { background: #89b4fa; color: #11111b; font-weight: bold; }
         
-        /* NEW: Telemetry Bar styling */
         .telemetry-bar { background: #11111b; padding: 10px; border-radius: 6px; display: flex; justify-content: space-around; margin-bottom: 15px; font-family: monospace; font-size: 14px; }
         .warn { color: #f38ba8 !important; font-weight: bold; }
     </style>
@@ -41,7 +40,6 @@
                 <h2>Live Feed</h2>
             </div>
             
-            <!-- NEW: TELEMETRY BAR -->
             <div class="telemetry-bar">
                 <span>🌡️ CPU Temp: <span id="tele_temp" style="color: #a6e3a1;">-- °C</span></span>
                 <span>💾 SD Free Space: <span id="tele_disk" style="color: #89b4fa;">-- GB</span></span>
@@ -122,15 +120,9 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <div class="control-group" style="flex: 1;">
-                    <label>Interval (Seconds):</label>
-                    <input type="number" id="tl_interval" min="1" step="1">
-                </div>
-                <div class="control-group" style="flex: 1;">
-                    <label>Batch Size:</label>
-                    <input type="number" id="tl_batch" min="2" step="5">
-                </div>
+            <div class="control-group">
+                <label>Batch Size (Shots to Stack):</label>
+                <input type="number" id="tl_batch" min="2" step="5">
             </div>
 
             <button class="btn btn-full btn-blue" onclick="saveAllSettings()">Apply & Save Configurations</button>
@@ -156,7 +148,6 @@
         let isRecording = false;
         let currentGalleryFolder = 'processed';
 
-        // --- NEW: TELEMETRY POLLING LOGIC ---
         async function pollSystemHealth() {
             try {
                 const res = await fetch('/api/system/health');
@@ -168,7 +159,6 @@
                 tempEl.innerText = data.temp_c + " °C";
                 diskEl.innerText = data.free_gb + " / " + data.total_gb + " GB";
                 
-                // Color warnings (Hotter than 70C or less than 2GB free)
                 tempEl.className = data.temp_c > 70 ? 'warn' : '';
                 diskEl.className = data.free_gb < 2.0 ? 'warn' : '';
                 
@@ -178,12 +168,12 @@
         }
 
         const scenarios = {
-            "daytime": { auto_exposure: 3, exposure: 100, gain: 0, interval: 30, batch: 10 },
-            "moon": { auto_exposure: 1, exposure: 20, gain: 0, interval: 5, batch: 5 },
-            "planets": { auto_exposure: 1, exposure: 150, gain: 80, interval: 2, batch: 20 },
-            "city_night": { auto_exposure: 1, exposure: 3000, gain: 100, interval: 1, batch: 40 },
-            "milky_way": { auto_exposure: 1, exposure: 15000, gain: 200, interval: 2, batch: 15 },
-            "meteors": { auto_exposure: 1, exposure: 1000, gain: 220, interval: 1, batch: 100 }
+            "daytime": { auto_exposure: 3, exposure: 100, gain: 0, batch: 10 },
+            "moon": { auto_exposure: 1, exposure: 20, gain: 0, batch: 5 },
+            "planets": { auto_exposure: 1, exposure: 150, gain: 80, batch: 20 },
+            "city_night": { auto_exposure: 1, exposure: 3000, gain: 100, batch: 40 },
+            "milky_way": { auto_exposure: 1, exposure: 15000, gain: 200, batch: 15 },
+            "meteors": { auto_exposure: 1, exposure: 1000, gain: 220, batch: 100 }
         };
 
         function applyScenario() {
@@ -192,7 +182,6 @@
                 document.getElementById("auto_exposure").value = scenarios[s].auto_exposure;
                 document.getElementById("exposure").value = scenarios[s].exposure;
                 document.getElementById("gain").value = scenarios[s].gain;
-                document.getElementById("tl_interval").value = scenarios[s].interval;
                 document.getElementById("tl_batch").value = scenarios[s].batch;
             }
         }
@@ -276,7 +265,6 @@
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    interval: parseInt(document.getElementById("tl_interval").value),
                     batch_size: parseInt(document.getElementById("tl_batch").value)
                 })
             });
@@ -349,14 +337,12 @@
         window.onload = async () => {
             const resTL = await fetch('/api/config/timelapse');
             const tlConfig = await resTL.json();
-            document.getElementById('tl_interval').value = tlConfig.interval;
             document.getElementById('tl_batch').value = tlConfig.batch_size;
             
             loadGallery('processed');
             
-            // Start the telemetry polling loop
             pollSystemHealth();
-            setInterval(pollSystemHealth, 5000); // Update every 5 seconds
+            setInterval(pollSystemHealth, 5000); 
         };
     </script>
 </body>

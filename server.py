@@ -90,10 +90,10 @@ class SkyServer:
         return jsonify({"running": self.timelapse.is_running})
 
     def config_timelapse(self):
-        if request.method == 'GET': return jsonify({"interval": self.timelapse.interval, "batch_size": self.timelapse.batch_size})
+        if request.method == 'GET': return jsonify({"batch_size": self.timelapse.batch_size})
         elif request.method == 'POST':
             data = request.json
-            self.timelapse.update_settings(data.get('interval'), data.get('batch_size'))
+            self.timelapse.update_settings(data.get('batch_size'))
             return jsonify({"status": "success"})
 
     def make_video(self):

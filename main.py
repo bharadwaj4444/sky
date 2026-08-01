@@ -44,7 +44,6 @@ def main():
         camera=camera, 
         processor=processor, 
         sessions_dir=DIRS['sessions'],
-        interval=5, 
         batch_size=5
     )
 
