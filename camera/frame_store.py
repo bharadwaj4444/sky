@@ -33,11 +33,11 @@ class FrameStore:
         timeout: float | None = None,
     ) -> Frame | None:
 
-        logger.info(
-            "FRAMESTORE WAIT: store=%s sequence>%d",
-            id(self),
-            sequence,
-        )
+        # logger.info(
+        #     "FRAMESTORE WAIT: store=%s sequence>%d",
+        #     id(self),
+        #     sequence,
+        # )
 
         with self._condition:
 
@@ -55,11 +55,11 @@ class FrameStore:
                 )
 
             if has_new_frame():
-                logger.info(
-                    "FRAMESTORE RETURN: store=%s sequence=%d",
-                    id(self),
-                    self._latest.sequence,
-                )
+                # logger.info(
+                #     "FRAMESTORE RETURN: store=%s sequence=%d",
+                #     id(self),
+                #     self._latest.sequence,
+                # )
                 return self._latest
 
             logger.warning(

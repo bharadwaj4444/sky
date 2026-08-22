@@ -86,7 +86,7 @@ class CaptureService:
 
     def _run(self):
 
-        logger.info("CAPTURE: _run() ENTERED")
+        # logger.info("CAPTURE: _run() ENTERED")
 
         while self._running:
 
@@ -95,10 +95,10 @@ class CaptureService:
 
                 image = self.camera.read()
 
-                logger.info(
-                    "CAPTURE: read() -> %s",
-                    None if image is None else image.shape,
-                )
+                # logger.info(
+                #     "CAPTURE: read() -> %s",
+                #     None if image is None else image.shape,
+                # )
 
                 if image is None:
 
@@ -111,10 +111,10 @@ class CaptureService:
 
                 self._sequence += 1
 
-                logger.info(
-                    "CAPTURE: publishing frame %d",
-                    self._sequence,
-                )
+                # logger.info(
+                #     "CAPTURE: publishing frame %d",
+                #     self._sequence,
+                # )
 
                 frame = Frame(
                     image=image,
