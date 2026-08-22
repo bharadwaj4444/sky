@@ -37,10 +37,10 @@ class MjpegStreamer:
 
             last_sequence = frame.sequence
 
-            logger.info(
-                "Streaming frame %s",
-                frame.sequence,
-            )
+            # logger.info(
+            #     "Streaming frame %s",
+            #     frame.sequence,
+            # )
 
             success, encoded = cv2.imencode(
                 ".jpg",
