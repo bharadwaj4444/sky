@@ -94,6 +94,8 @@ def main():
 
         logger.info("Creating Flask application")
 
+        capture_service.start()
+
         app = create_app(
             timelapse=timelapse,
             streamer=streamer,
