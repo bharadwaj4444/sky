@@ -6,7 +6,7 @@ import cv2
 logger = logging.getLogger(__name__)
 
 
-class CameraDevice:
+class CameraBackend:
 
     def __init__(
         self,

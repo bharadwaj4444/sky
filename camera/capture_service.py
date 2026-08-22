@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import logging
 import threading
 import time
-
 from datetime import datetime, timezone
 
 from models.frame import Frame
@@ -29,11 +30,7 @@ class CaptureService:
         if self._running:
             return
 
-        logger.info("Opening camera")
-
         self.camera.open()
-
-        logger.info("Camera opened successfully")
 
         self._running = True
 
@@ -45,11 +42,18 @@ class CaptureService:
 
         self._thread.start()
 
-        logger.info("Capture thread started")
+        logger.info(
+            "Capture service started"
+        )
 
     def stop(self):
 
-        logger.info("Stopping capture service")
+        if not self._running:
+            return
+
+        logger.info(
+            "Stopping capture service"
+        )
 
         self._running = False
 
@@ -58,24 +62,27 @@ class CaptureService:
 
         self.camera.close()
 
+        self._thread = None
+
     def _run(self):
 
-        logger.info("Capture loop started")
+        logger.info(
+            "Capture loop started"
+        )
 
         while self._running:
 
             try:
-                success, image = self.camera.read()
 
-                logger.info(
-                    "camera.read(): success=%s image=%s",
-                    success,
-                    None if image is None else image.shape,
-                )
+                image = self.camera.read()
 
-                if not success or image is None:
-                    logger.warning("Failed to capture frame")
-                    time.sleep(0.1)
+                if image is None:
+
+                    logger.warning(
+                        "Camera returned no frame"
+                    )
+
+                    time.sleep(0.05)
                     continue
 
                 self._sequence += 1
@@ -83,19 +90,28 @@ class CaptureService:
                 frame = Frame(
                     image=image,
                     sequence=self._sequence,
-                    captured_at=datetime.now(timezone.utc),
+                    captured_at=datetime.now(
+                        timezone.utc
+                    ),
                 )
 
                 self.frame_store.publish(frame)
 
                 if self._sequence == 1:
+
                     logger.info(
-                        "First frame published: shape=%s",
+                        "First frame captured: %s",
                         image.shape,
                     )
 
             except Exception:
-                logger.exception("Capture loop error")
+
+                logger.exception(
+                    "Capture loop failed"
+                )
+
                 time.sleep(1)
 
-        logger.info("Capture loop stopped")
+        logger.info(
+            "Capture loop stopped"
+        )

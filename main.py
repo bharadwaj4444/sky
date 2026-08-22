@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from camera.device import CameraDevice
+from camera.backend import CameraBackend
 from camera.frame_store import FrameStore
 from camera.capture_service import CaptureService
 
@@ -14,6 +14,8 @@ from processing.worker import StackWorker
 from storage.repository import StorageRepository
 from streaming.mjpeg import MjpegStreamer
 from timelapse.manager import TimelapseManager
+
+from camera.gstreamer import GStreamerCamera
 
 from web.app import create_app
 
@@ -38,9 +40,9 @@ def main():
         logger.info("Creating FrameStore")
         frame_store = FrameStore()
 
-        logger.info("Creating CameraDevice")
-        camera = CameraDevice(
-            device_index=0,
+        logger.info("Creating CameraBackend")
+        camera = CameraBackend(
+            device="/dev/video0",
             width=1920,
             height=1080,
             fps=30,
