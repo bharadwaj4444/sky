@@ -25,12 +25,28 @@ class CaptureService:
         self._thread = None
         self._sequence = 0
 
+    @property
+    def is_running(self) -> bool:
+        return self._running
+
+
+    @property
+    def sequence(self) -> int:
+        return self._sequence
+
     def start(self):
 
         if self._running:
             return
+        
+        logger.info("CAPTURE: start() called")
 
         self.camera.open()
+
+        logger.info(
+            "CAPTURE: camera opened = %s",
+            self.camera.is_open,
+        )
 
         self._running = True
 
@@ -43,7 +59,8 @@ class CaptureService:
         self._thread.start()
 
         logger.info(
-            "Capture service started"
+            "CAPTURE: thread started, alive=%s",
+            self._thread.is_alive(),
         )
 
     def stop(self):
@@ -66,15 +83,18 @@ class CaptureService:
 
     def _run(self):
 
-        logger.info(
-            "Capture loop started"
-        )
+        logger.info("CAPTURE: _run() ENTERED")
 
         while self._running:
 
             try:
 
                 image = self.camera.read()
+
+                logger.info(
+                    "CAPTURE: read() -> %s",
+                    None if image is None else image.shape,
+                )
 
                 if image is None:
 
@@ -86,6 +106,11 @@ class CaptureService:
                     continue
 
                 self._sequence += 1
+
+                logger.info(
+                    "CAPTURE: publishing frame %d",
+                    self._sequence,
+                )
 
                 frame = Frame(
                     image=image,
@@ -105,13 +130,11 @@ class CaptureService:
                     )
 
             except Exception:
-
                 logger.exception(
-                    "Capture loop failed"
+                    "CAPTURE: exception in capture loop"
                 )
-
                 time.sleep(1)
 
         logger.info(
-            "Capture loop stopped"
+            "CAPTURE: capture loop stopped"
         )

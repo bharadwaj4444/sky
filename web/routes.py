@@ -1,5 +1,7 @@
 from flask import Response, jsonify, request
 
+import camera
+
 
 def register_routes(
     app,
@@ -60,14 +62,16 @@ def register_routes(
     @app.get("/api/health")
     def health():
 
-        return jsonify(
-            {
-                "status": "ok",
-                "camera_running": (
-                    capture_service is not None
-                ),
-            }
-        )
+        return jsonify({
+            "status": "ok",
+            "camera": {
+                "open": camera.is_open,
+            },
+            "capture": {
+                "running": capture_service.is_running,
+                "sequence": capture_service.sequence,
+            },
+        })
 
     @app.get("/stream")
     def stream():

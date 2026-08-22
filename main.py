@@ -41,7 +41,7 @@ def main():
         frame_store = FrameStore()
 
         logger.info("Creating CameraBackend")
-        camera = CameraBackend(
+        camera = GStreamerCamera(
             device="/dev/video0",
             width=1920,
             height=1080,
