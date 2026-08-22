@@ -91,7 +91,7 @@ class CaptureService:
         while self._running:
 
             try:
-                logger.info("CAPTURE BEFORE READ")
+                # logger.info("CAPTURE BEFORE READ")
 
                 image = self.camera.read()
 
