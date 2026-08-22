@@ -10,38 +10,39 @@ class CameraDevice:
 
     def __init__(
         self,
-        device_index=0,
+        device="/dev/video0",
         width=1920,
         height=1080,
         fps=30,
     ):
-        self.device_index = device_index
+        self.device = device
         self.width = width
         self.height = height
         self.fps = fps
-
         self.capture = None
 
     def open(self):
 
         logger.info(
-            "Opening camera device %s",
-            self.device_index,
+            "Opening camera: %s",
+            self.device,
         )
 
         self.capture = cv2.VideoCapture(
-            self.device_index,
+            self.device,
             cv2.CAP_V4L2,
         )
 
-        logger.info("VideoCapture created")
-
         if not self.capture.isOpened():
             raise RuntimeError(
-                f"Unable to open camera {self.device_index}"
+                f"Unable to open {self.device}"
             )
 
-        logger.info("Camera opened")
+        # Set FOURCC BEFORE resolution/FPS.
+        self.capture.set(
+            cv2.CAP_PROP_FOURCC,
+            cv2.VideoWriter_fourcc(*"MJPG"),
+        )
 
         self.capture.set(
             cv2.CAP_PROP_FRAME_WIDTH,
@@ -58,37 +59,17 @@ class CameraDevice:
             self.fps,
         )
 
-        self.capture.set(
-            cv2.CAP_PROP_FOURCC,
-            cv2.VideoWriter_fourcc(*"MJPG"),
-        )
-
         logger.info(
-            "Requested camera settings: "
-            "%sx%s @ %s FPS",
-            self.width,
-            self.height,
-            self.fps,
-        )
-
-        actual_width = self.capture.get(
-            cv2.CAP_PROP_FRAME_WIDTH
-        )
-
-        actual_height = self.capture.get(
-            cv2.CAP_PROP_FRAME_HEIGHT
-        )
-
-        actual_fps = self.capture.get(
-            cv2.CAP_PROP_FPS
-        )
-
-        logger.info(
-            "Actual camera settings: "
-            "%sx%s @ %s FPS",
-            actual_width,
-            actual_height,
-            actual_fps,
+            "Actual: %.0fx%.0f @ %.2f FPS",
+            self.capture.get(
+                cv2.CAP_PROP_FRAME_WIDTH
+            ),
+            self.capture.get(
+                cv2.CAP_PROP_FRAME_HEIGHT
+            ),
+            self.capture.get(
+                cv2.CAP_PROP_FPS
+            ),
         )
 
     def read(self):
