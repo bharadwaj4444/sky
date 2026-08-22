@@ -80,6 +80,12 @@ class GStreamerCamera:
 
         success, frame = self._capture.read()
 
+        logger.info(
+            "CAMERA READ: success=%s shape=%s",
+            success,
+            None if frame is None else frame.shape,
+        )
+
         if not success or frame is None:
             return None
 

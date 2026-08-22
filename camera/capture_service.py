@@ -36,7 +36,10 @@ class CaptureService:
 
     def start(self):
 
+        logger.info("CAPTURE START")
+
         if self._running:
+            logger.warning("CAPTURE ALREADY RUNNING")
             return
         
         logger.info("CAPTURE: start() called")
@@ -88,6 +91,7 @@ class CaptureService:
         while self._running:
 
             try:
+                logger.info("CAPTURE BEFORE READ")
 
                 image = self.camera.read()
 

@@ -1,6 +1,10 @@
 import threading
 
+import logging
+
 from models.frame import Frame
+
+logger = logging.getLogger(__name__)
 
 
 class FrameStore:
@@ -29,6 +33,12 @@ class FrameStore:
         timeout: float | None = None,
     ) -> Frame | None:
 
+        logger.info(
+            "FRAMESTORE WAIT: store=%s sequence>%d",
+            id(self),
+            sequence,
+        )
+
         with self._condition:
 
             def has_new_frame():
@@ -45,6 +55,16 @@ class FrameStore:
                 )
 
             if has_new_frame():
+                logger.info(
+                    "FRAMESTORE RETURN: store=%s sequence=%d",
+                    id(self),
+                    self._latest.sequence,
+                )
                 return self._latest
+
+            logger.warning(
+                "FRAMESTORE TIMEOUT: store=%s",
+                id(self),
+            )
 
             return None

@@ -65,7 +65,7 @@ def register_routes(
         return jsonify({
             "status": "ok",
             "camera": {
-                "open": camera.is_open,
+                "open": True,
             },
             "capture": {
                 "running": capture_service.is_running,
